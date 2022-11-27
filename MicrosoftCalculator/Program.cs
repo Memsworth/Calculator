@@ -49,6 +49,7 @@ namespace MicrosoftCalculator
                         Console.WriteLine("Your result: {0:0.##}\n", result);
                         calculator.IncreaseCount();
                         calculator.CalculationList.Add(result);
+                        ClearList(calculator.CalculationList);
                     }
                 }
                 catch (Exception e)
@@ -69,10 +70,18 @@ namespace MicrosoftCalculator
             return;
         }
 
+        private static void ClearList(List<double> list)
+        {
+            Console.Write("\nDo you want to clear your list? (Y/y) ");
+            if (GetApproval())
+            {
+                list.Clear();
+            }
+        }
         private static double GetInput(string message, List<double> list)
         {
             Console.WriteLine("Do you want to take from list (Y/y): ");
-            if (GetListApproval())
+            if (GetApproval())
             {
                 return GetListItem(message, list);
             } 
@@ -81,7 +90,7 @@ namespace MicrosoftCalculator
             return CleanNum();
         }
 
-        private static bool GetListApproval() => (Console.ReadLine() == "y" || Console.ReadLine() == "Y");
+        private static bool GetApproval() => (Console.ReadLine() == "y" || Console.ReadLine() == "Y");
 
         private static void ShowMenu()
         {
