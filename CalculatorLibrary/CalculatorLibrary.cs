@@ -8,9 +8,11 @@ namespace CalculatorLibrary
     public class Calculator
     {
         private JsonWriter writer;
+        public List<double> CalculationList { get; private set; }
         public int CalculationCount { get; private set; } = 0;
         public Calculator()
         {
+            CalculationList = new List<double>();
             StreamWriter logFile = File.CreateText("calculatorlog.json");
             logFile.AutoFlush = true;
             writer = new JsonTextWriter(logFile);

@@ -8,6 +8,7 @@ namespace MicrosoftCalculator
         {
             var calculator = new Calculator();
             bool endApp = false;
+            
             // Display title as the C# console calculator app.
             Console.WriteLine("Console Calculator in C#\r");
             Console.WriteLine("------------------------\n");
@@ -15,45 +16,30 @@ namespace MicrosoftCalculator
             while (!endApp)
             {
                 // Declare variables and set to empty.
-                string numInput1 = "";
-                string numInput2 = "";
-                double result = 0;
+                double cleanNum1;
+                double cleanNum2;
 
-                // Ask the user to type the first number.
-                Console.Write("Type a number, and then press Enter: ");
-                numInput1 = Console.ReadLine();
-
-                double cleanNum1 = 0;
-                while (!double.TryParse(numInput1, out cleanNum1))
+                if (calculator.CalculationList.Any())
                 {
-                    Console.Write("This is not valid input. Please enter an integer value: ");
-                    numInput1 = Console.ReadLine();
+                    // Ask the user to type the first number.
+                    cleanNum1 = GetInput("Type a number, and then press Enter: ", calculator.CalculationList);
+                    cleanNum2 = GetInput("Type another number, and then press Enter: ", calculator.CalculationList);
                 }
-
-                // Ask the user to type the second number.
-                Console.Write("Type another number, and then press Enter: ");
-                numInput2 = Console.ReadLine();
-
-                double cleanNum2 = 0;
-                while (!double.TryParse(numInput2, out cleanNum2))
+                else
                 {
-                    Console.Write("This is not valid input. Please enter an integer value: ");
-                    numInput2 = Console.ReadLine();
+                    Console.Write("Type a number, and then press Enter: ");
+                    cleanNum1 = CleanNum();
+                    Console.Write("Type another number, and then press Enter: ");
+                    cleanNum2 = CleanNum();
                 }
-
-                // Ask the user to choose an operator.
-                Console.WriteLine("Choose an operator from the following list:");
-                Console.WriteLine("\ta - Add");
-                Console.WriteLine("\ts - Subtract");
-                Console.WriteLine("\tm - Multiply");
-                Console.WriteLine("\td - Divide");
-                Console.Write("Your option? ");
+                
+                ShowMenu();
 
                 string op = Console.ReadLine();
 
                 try
                 {
-                    result = calculator.DoOperation(cleanNum1, cleanNum2, op);
+                    var result = calculator.DoOperation(cleanNum1, cleanNum2, op);
                     if (double.IsNaN(result))
                     {
                         Console.WriteLine("This operation will result in a mathematical error.\n");
@@ -62,6 +48,7 @@ namespace MicrosoftCalculator
                     {
                         Console.WriteLine("Your result: {0:0.##}\n", result);
                         calculator.IncreaseCount();
+                        calculator.CalculationList.Add(result);
                     }
                 }
                 catch (Exception e)
@@ -80,6 +67,58 @@ namespace MicrosoftCalculator
             
             calculator.Finish();
             return;
+        }
+
+        private static double GetInput(string message, List<double> list)
+        {
+            Console.WriteLine("Do you want to take from list (Y/y): ");
+            if (GetListApproval())
+            {
+                return GetListItem(message, list);
+            } 
+            
+            Console.Write(message); 
+            return CleanNum();
+        }
+
+        private static bool GetListApproval() => (Console.ReadLine() == "y" || Console.ReadLine() == "Y");
+
+        private static void ShowMenu()
+        {
+            // Ask the user to choose an operator.
+            Console.WriteLine("Choose an operator from the following list:");
+            Console.WriteLine("\ta - Add");
+            Console.WriteLine("\ts - Subtract");
+            Console.WriteLine("\tm - Multiply");
+            Console.WriteLine("\td - Divide");
+            Console.Write("Your option? ");
+        }
+
+        private static double GetListItem(string message, List<double> calculatorCalculationList)
+        {
+            int indexInput;
+            Console.Write(message);
+            foreach(var item in calculatorCalculationList)
+            {
+                Console.Write($"{item} -  ");
+            }
+            Console.Write("Enter index: ");
+            while (!int.TryParse(Console.ReadLine(), out indexInput) && calculatorCalculationList.Contains(calculatorCalculationList[indexInput]))
+            {
+                Console.WriteLine("item doesn't exist in list. Enter index again");
+            }
+
+            return calculatorCalculationList[indexInput];
+        }
+        private static double CleanNum()
+        {
+            double cleanNum;
+            while (!double.TryParse(Console.ReadLine(), out cleanNum))
+            {
+                Console.Write("This is not valid input. Please enter an integer value: ");
+            }
+
+            return cleanNum;
         }
     }
 }
